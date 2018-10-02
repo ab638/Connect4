@@ -15,6 +15,7 @@ int main(){
 	Initialize();
 	getmaxyx(stdscr, ymax, xmax);
 	chosen = initMenu();
+	
 	switch(chosen){
 	case 0:
 	//drawTitle(0); // draw the title
@@ -25,7 +26,7 @@ int main(){
 		break;
 	case 1:  // print database
 		printPlayers();
-		
+		// can quit game or get to it from here	
 		break;
 	case 2:
 		Quit(); // end screen

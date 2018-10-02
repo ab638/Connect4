@@ -451,7 +451,8 @@ void Quit() {
 
 void drawPrompt(char *s) {
     int x, y;
-    prompt = newwin(5, 30, 5, 5); // new window
+    prompt = newwin(5, 40, 5, 5); // new window
+    box(prompt, 0,0);
     getmaxyx(prompt, y, x); // put prompt there
     mvwprintw(prompt, 1, 1, "%s", s); // write s
     refresh();
@@ -621,10 +622,11 @@ void printPlayers() {
     Player p[100];
     datum key, data;
     int i = 4;
-    nodelay(stdscr, FALSE);
+    nodelay(stdscr, TRUE);
     win = newwin(ymax, xmax, 0, 0);
-    mvwprintw(win,2, xmax/2-40, "Name          Wins  ");
-    mvwprintw(win,3, xmax/2-40,  "--------------------");
+    box(win,0,0);
+    mvwprintw(win,2, xmax/2-30, "Name          Wins  ");
+    mvwprintw(win,3, xmax/2-30,  "--------------------");
     //fetch info on all info  on players
     for(key = gdbm_firstkey(dbf); key.dptr != NULL; key =gdbm_nextkey(dbf, key)) {
         data =gdbm_fetch(dbf, key);
@@ -646,9 +648,12 @@ void printPlayers() {
         }
     }
     for(int l = 4; l < i; l++) {
-        mvwprintw(win, l, xmax/2-40, "%-5s", p[l].name);
-        mvwprintw(win, l, xmax/2-40+ 15, "%-5d", p[l].score);
+        mvwprintw(win, l, xmax/2-30, "%-5s", p[l].name);
+        mvwprintw(win, l, xmax/2-30+ 15, "%-5d", p[l].score);
     }
+     char *s = "Press q to Open Prompt to Play Game or Exit";
+     mvwprintw(win, ymax - 2, xmax - 1 - 45,"%s", s);
+
     gdbm_close(dbf);
 
     refresh();
@@ -658,14 +663,16 @@ void printPlayers() {
     if(c == 'q') {
         char msg[100];
         // Do you still want to play the game after looking at scores?
-        sprintf(msg, "Do you want to play the Game?");
+        sprintf(msg, "Do you want to play the game? ");
         drawPrompt(msg);
         char ch;
         while((ch = getch()) != 'y' && ch != 'n');
         if(ch == 'n') {
-            Quit();// play output screen
-            endwin();
-            exit(0);
+          Quit();// play output screen
+	  delwin(win);
+          endwin();
+          exit(0);
+	
         }
         // yeah i want to play
         if(ch == 'y') {
@@ -674,6 +681,7 @@ void printPlayers() {
             playerSelect();
             drawBoardLayout();
             Play();
+
         }
     }
 
